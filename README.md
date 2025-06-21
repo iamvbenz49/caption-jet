@@ -1,37 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚡ CaptionJet — AI-Powered Social Caption Generator
 
-## Getting Started
+> Gen-Z SaaS for viral captions. Built with Next.js 15, Gemini API, and Tailwind/shadcn.
 
-First, run the development server:
+---
 
-```bash
+## 🧠 Tech Stack
+
+- ✅ Next.js 15 (App Router + Turbopack)  
+- ✅ TypeScript  
+- ✅ TailwindCSS + shadcn/ui  
+- ✅ Google Gemini 1.5 Flash (free LLM API)  
+- ✅ Responsive UI + copy-to-clipboard  
+
+---
+
+## 🔥 File Structure
+
+\```
+captionjet/
+├── app/
+│   ├── api/
+│   │   └── response/route.ts        # Server route hitting Gemini API
+│   └── page.tsx                     # Main UI page (Client Component)
+├── components/                      # shadcn/ui components
+├── lib/
+│   └── gemini.ts                    # LLM wrapper
+├── public/
+├── .env.local                       # Your Gemini API key
+└── README.md
+\```
+
+---
+
+## 📦 Install & Run
+
+### 1. Clone the Repo
+
+\```bash
+git clone https://github.com/your-user/captionjet.git
+cd captionjet
+\```
+
+### 2. Install dependencies
+
+\```bash
+npm install
+\```
+
+### 3. Create `.env.local`
+
+\```env
+GOOGLE_API_KEY=your_gemini_api_key
+\```
+
+> 🔑 Get your API key from 👉 [https://makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey)
+
+### 4. Run it locally
+
+\```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+\```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧪 License
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# caption-jet
+MIT — Steal it, fork it, clone it, pimp it.
