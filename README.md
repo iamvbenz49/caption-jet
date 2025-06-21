@@ -16,7 +16,7 @@
 
 ## 🔥 File Structure
 
-\```
+```
 captionjet/
 ├── app/
 │   ├── api/
@@ -28,7 +28,7 @@ captionjet/
 ├── public/
 ├── .env.local                       # Your Gemini API key
 └── README.md
-\```
+```
 
 ---
 
@@ -36,30 +36,30 @@ captionjet/
 
 ### 1. Clone the Repo
 
-\```bash
+```bash
 git clone https://github.com/your-user/captionjet.git
 cd captionjet
-\```
+```
 
 ### 2. Install dependencies
 
-\```bash
+```
 npm install
-\```
+```
 
 ### 3. Create `.env.local`
 
-\```env
+```env
 GOOGLE_API_KEY=your_gemini_api_key
-\```
+```
 
 > 🔑 Get your API key from 👉 [https://makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey)
 
 ### 4. Run it locally
 
-\```bash
+```bash
 npm run dev
-\```
+```
 
 ---
 
