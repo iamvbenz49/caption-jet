@@ -14,24 +14,6 @@
 
 ---
 
-## 🔥 File Structure
-
-```
-captionjet/
-├── app/
-│   ├── api/
-│   │   └── response/route.ts        # Server route hitting Gemini API
-│   └── page.tsx                     # Main UI page (Client Component)
-├── components/                      # shadcn/ui components
-├── lib/
-│   └── gemini.ts                    # LLM wrapper
-├── public/
-├── .env.local                       # Your Gemini API key
-└── README.md
-```
-
----
-
 ## 📦 Install & Run
 
 ### 1. Clone the Repo
