@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import {
@@ -12,16 +11,17 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { Checkbox } from '@/components/ui/checkbox'
-import { CheckIcon, CopyIcon } from 'lucide-react'
+import { Toggle } from '@/components/ui/toggle'
+import { CheckIcon, CopyIcon, Loader } from 'lucide-react'
 import axios from 'axios'
-
+import { motion } from 'framer-motion'
 
 type Platform = 'linkedin' | 'twitter' | 'instagram' | 'tiktok' | 'youtube'
 
 export default function CaptionGenerator() {
   const [prompt, setPrompt] = useState('')
   const [tone, setTone] = useState('')
+  const [style, setStyle] = useState('')
   const [platform, setPlatform] = useState<Platform | ''>('')
   const [includeHashtags, setIncludeHashtags] = useState(false)
   const [includeCTA, setIncludeCTA] = useState(false)
@@ -75,6 +75,13 @@ export default function CaptionGenerator() {
     storytelling: 'Write like a short story.',
   }
 
+  const styleDescriptions: Record<string, string> = {
+    gymbro: 'Talk like a shredded gym rat hyping up leg day.',
+    marketing: 'Craft it like a viral marketing hook.',
+    technerd: 'Make it sound like a geeky tech bro.',
+    nsfw: 'Push the limits, make it wild and naughty.',
+  }
+
   const platformTextMap: Record<Platform, string> = {
     linkedin: 'Make it suitable for LinkedIn.',
     twitter: 'Keep it short and punchy for Twitter.',
@@ -91,50 +98,39 @@ export default function CaptionGenerator() {
     setResults([])
 
     const toneText = toneDescriptions[tone] || ''
+    const styleText = styleDescriptions[style] || ''
     const platformText = platform ? platformTextMap[platform] : ''
 
     const base = `
-                    You are a viral content strategist who writes short, punchy, and scroll-stopping captions for social media.
+      You are a viral content strategist who writes short, punchy, and scroll-stopping captions for social media.
 
-                    Given the following:
+      Given the following:
+        - Prompt / Content Description: "${prompt.trim()}"
+        - Tone: ${tone} (${toneText})
+        - Style: ${style} (${styleText})
+        - Platform: ${platform} (${platformText})
+        - Include Hashtags: ${includeHashtags}
+        - Include CTA (Call to Action): ${includeCTA}
 
-                        - Prompt / Content Description: "${prompt.trim()}"
-                        - Tone: ${tone}
-                        - Platform: ${platform}
-                        - Include Hashtags: ${includeHashtags}
-                        - Include CTA (Call to Action): ${includeCTA}
+      Your task:
+      1. Generate 5 unique, engaging captions based on this context.
+      2. Each caption should match the tone, style, and vibe of the platform.
+      3. If hashtags are included, append 2–3 relevant hashtags.
+      4. If CTA is true, end each caption with a call to action (like “Follow for more”, “Drop a comment”, etc).
 
-                        Your task:
-                        1. Generate 5 unique, engaging captions based on this context.
-                        2. Each caption should match the tone and vibe of the platform.
-                        3. If hashtags are included, append 2–3 relevant hashtags.
-                        4. If CTA is true, end each caption with a call to action (like “Follow for more”, “Drop a comment”, etc).
-
-                        Only output the 5 captions. No explanation.
-                `.trim()
-
-
-    const hashtags = includeHashtags
-      ? `#${prompt
-          .split(' ')
-          .slice(0, 3)
-          .join(' ')
-          .toLowerCase()
-          .replace(/ /g, ' #')} #viral #captionjet`
-      : ''
-    
+      Only output the 5 captions. No explanation.
+    `.trim()
 
     try {
-    const res = await axios.post('/api/response', { prompt: base })
-    console.log(res.data.captions)
-    setResults(res.data.captions)
-  } catch (err) {
-    console.error('Gemini error:', err)
-    setResults(['Failed to generate captions. Try again.'])
-  }
+      const res = await axios.post('/api/response', { prompt: base })
+      setResults(res.data.captions)
+    } catch (err) {
+      console.error('Gemini error:', err)
+      setResults(['Failed to generate captions. Try again.'])
+    }
 
-  setLoading(false)
-}
+    setLoading(false)
+  }
 
   const handleCopy = async (text: string, index: number) => {
     await navigator.clipboard.writeText(text)
@@ -155,74 +151,81 @@ export default function CaptionGenerator() {
         />
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Platform</Label>
-          <Select
-            onValueChange={(v: Platform) => {
-              setPlatform(v)
-              setTone('')
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Choose platform" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="instagram">Instagram</SelectItem>
-              <SelectItem value="tiktok">TikTok</SelectItem>
-              <SelectItem value="twitter">Twitter</SelectItem>
-              <SelectItem value="youtube">YouTube</SelectItem>
-              <SelectItem value="linkedin">LinkedIn</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="rounded-xl border p-4 space-y-4 bg-muted/30">
+        <h3 className="text-sm font-semibold text-muted-foreground">Vibe Settings</h3>
 
-        <div className="space-y-2">
-          <Label>Tone</Label>
-          <Select onValueChange={(v) => setTone(v)} value={tone} disabled={!platform}>
-            <SelectTrigger>
-              <SelectValue placeholder={platform ? 'Choose tone' : 'Select platform first'} />
-            </SelectTrigger>
-            <SelectContent>
-              {getToneOptions().map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Platform</Label>
+            <Select onValueChange={(v: Platform) => { setPlatform(v); setTone('') }}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choose platform" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="instagram">Instagram</SelectItem>
+                <SelectItem value="tiktok">TikTok</SelectItem>
+                <SelectItem value="twitter">Twitter</SelectItem>
+                <SelectItem value="youtube">YouTube</SelectItem>
+                <SelectItem value="linkedin">LinkedIn</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Tone</Label>
+            <Select onValueChange={(v) => setTone(v)} value={tone} disabled={!platform}>
+              <SelectTrigger>
+                <SelectValue placeholder={platform ? 'Choose tone' : 'Select platform first'} />
+              </SelectTrigger>
+              <SelectContent>
+                {getToneOptions().map((option) => (
+                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {tone && <p className="text-xs text-muted-foreground mt-1">{toneDescriptions[tone]}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Style</Label>
+            <Select onValueChange={(v) => setStyle(v)} value={style}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choose style" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="gymbro">Gym Bro</SelectItem>
+                <SelectItem value="marketing">Marketing/Hook</SelectItem>
+                <SelectItem value="technerd">Tech Nerd</SelectItem>
+                <SelectItem value="nsfw">NSFW</SelectItem>
+              </SelectContent>
+            </Select>
+            {style && <p className="text-xs text-muted-foreground mt-1">{styleDescriptions[style]}</p>}
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="hashtags"
-            checked={includeHashtags}
-            onCheckedChange={() => setIncludeHashtags(!includeHashtags)}
-          />
-          <Label htmlFor="hashtags">Add Hashtags</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="cta"
-            checked={includeCTA}
-            onCheckedChange={() => setIncludeCTA(!includeCTA)}
-          />
-          <Label htmlFor="cta">Include CTA</Label>
-        </div>
+      <div className="flex flex-wrap gap-2">
+        <Toggle pressed={includeHashtags} onPressedChange={setIncludeHashtags}>Hashtags</Toggle>
+        <Toggle pressed={includeCTA} onPressedChange={setIncludeCTA}>Include CTA</Toggle>
       </div>
 
-      <Button className="w-full" onClick={handleGenerate} disabled={loading}>
-        {loading ? 'Generating...' : 'Generate Captions'}
-      </Button>
+      {loading ? (
+        <Button className="w-full" disabled>
+          <Loader className="animate-spin mr-2 h-4 w-4" /> Generating...
+        </Button>
+      ) : (
+        <Button className="w-full" onClick={handleGenerate}>Generate Captions</Button>
+      )}
 
       {results.length > 0 && (
         <div className="space-y-4">
           {results.map((caption, index) => (
-            <div
+            <motion.div
               key={index}
-              className="relative bg-muted rounded-xl p-4 text-sm whitespace-pre-line"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="relative bg-muted/40 rounded-xl p-4 text-sm whitespace-pre-line"
             >
               {caption}
               <button
@@ -231,7 +234,7 @@ export default function CaptionGenerator() {
               >
                 {copiedIndex === index ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
               </button>
-            </div>
+            </motion.div>
           ))}
         </div>
       )}
