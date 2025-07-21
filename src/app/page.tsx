@@ -1,7 +1,6 @@
 "use client"
 
 import CaptionGenerator from "@/components/CaptionGenerator"
-import Navbar from "@/components/Navbar"
 import { motion } from "framer-motion"
 
 export default function Home() {
@@ -9,7 +8,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col items-center justify-start px-4 sm:px-6 md:px-10 py-8 sm:py-12 relative">
 
 
-      <Navbar />
+      
 
       <div className="scale-100 sm:scale-110 md:scale-125 lg:scale-140 mt-40">
         <motion.div
